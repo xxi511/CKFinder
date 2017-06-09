@@ -31,9 +31,54 @@ class FinderUI(Frame):
         self.bar = Progressbar(self, orient="horizontal",
                                length=220, mode="determinate")
         self.bar.grid(row=3, column=0, columnspan=5)
-        self.btn = Button(self, text='搜尋')
+        self.btn = Button(self, text='搜尋', command=self.clickBtn)
         self.btn.grid(row=3, column=5, columnspan=5, stick=E)
 
+    def clickBtn(self):
+        url = self.checkurl()
+        if url is None:
+            messagebox.showerror('網址錯誤', '這是卡提諾的網址嗎')
+            return
+
+        keyword = self.keyEntry.get().strip()
+        if keyword == '':
+            messagebox.showerror('關鍵字錯誤', '關鍵字是空的')
+            return
+
+        pageErr, p1, p2 = self.checkpage()
+        if pageErr:
+            messagebox.showerror('頁數錯誤', '請輸入大於0的整數')
+            return
+
+
+    def checkurl(self):
+        # https://ck101.com/thread-3885080-1-1.html
+        # https://ck101.com/forum.php?mod=viewthread&tid=3434923&page=13
+        # https://ck101.com/forum.php?mod=viewthread&tid=3434923&page=13&extra=#pid99055328
+        urlStr = self.urlEntry.get()
+        if urlStr.startswith('https://ck101.com/thread'):
+            tid = urlStr.split('-')[1]
+        elif urlStr.startswith('https://ck101.com/forum.php?'):
+            tid = urlStr.split('&')[1][4:]
+        else:
+            tid = None
+
+        return 'https://ck101.com/thread-{}-1-1.html'.format(tid) if tid else None
+
+    def checkpage(self):
+        p1str = self.p1Entry.get()
+        p2str = self.p2Entry.get()
+        p1 = int(p1str) if p1str.isdigit() else None
+        p2 = int(p2str) if p2str.isdigit() else 99999
+
+        if p1 is None:
+            return 'err', None, None
+
+        p1, p2 = max(0, p1), max(0, p2)
+        if p1 == 0 or p2 == 0:
+            return 'err', None, None
+
+        return None, p1, p2
 
 if __name__ == '__main__':
     root = Tk()
