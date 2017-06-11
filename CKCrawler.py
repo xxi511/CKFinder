@@ -22,7 +22,7 @@ class CKCrawler(object):
     def getpageData(self, tid, page):
         url = 'https://ck101.com/thread-{}-{}-1.html'.format(tid, page)
         req = Request(url, headers={'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'})
-        data = bs(urlopen(req).read())
+        data = bs(urlopen(req).read(), 'lxml')
         return data
 
     def createThread(self, p1, p2, tid, keyword):

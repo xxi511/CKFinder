@@ -66,7 +66,7 @@ class FinderUI(Frame):
             self.bar['value'] = len(crawler.donelist)
             self.update()
             sleep(1)
-
+        self.bar['value'] = crawler.total
         k = crawler.findlist
         self.btn.config(state="active")
 
