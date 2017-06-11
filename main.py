@@ -1,5 +1,8 @@
 from tkinter import messagebox, Tk, W, E
 from tkinter.ttk import Label, Button, Entry, Progressbar, Frame
+from time import sleep
+
+from CKCrawler import CKCrawler
 
 class FinderUI(Frame):
     def __init__(self, parent):
@@ -30,13 +33,14 @@ class FinderUI(Frame):
 
         self.bar = Progressbar(self, orient="horizontal",
                                length=220, mode="determinate")
+        self.bar['value'] = 0
         self.bar.grid(row=3, column=0, columnspan=5)
         self.btn = Button(self, text='搜尋', command=self.clickBtn)
         self.btn.grid(row=3, column=5, columnspan=5, stick=E)
 
     def clickBtn(self):
-        url = self.checkurl()
-        if url is None:
+        tid = self.checkurl()
+        if tid is None:
             messagebox.showerror('網址錯誤', '這是卡提諾的網址嗎')
             return
 
@@ -50,6 +54,21 @@ class FinderUI(Frame):
             messagebox.showerror('頁數錯誤', '請輸入大於0的整數')
             return
 
+        crawler = CKCrawler(tid, keyword, p1, p2)
+        if crawler.err:
+            messagebox.showerror('頁數錯誤', crawler.err)
+            return
+
+        crawler.startThread()
+        self.bar["maximum"] = crawler.total
+        self.btn.config(state="disabled")
+        while len(crawler.donelist) < crawler.total:
+            self.bar['value'] = len(crawler.donelist)
+            self.update()
+            sleep(1)
+
+        k = crawler.findlist
+        self.btn.config(state="active")
 
     def checkurl(self):
         # https://ck101.com/thread-3885080-1-1.html
@@ -63,7 +82,7 @@ class FinderUI(Frame):
         else:
             tid = None
 
-        return 'https://ck101.com/thread-{}-1-1.html'.format(tid) if tid else None
+        return tid if tid else None
 
     def checkpage(self):
         p1str = self.p1Entry.get()
