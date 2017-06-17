@@ -61,13 +61,17 @@ class FinderUI(Frame):
 
         crawler.startThread()
         self.bar["maximum"] = crawler.total
+        self.bar['value'] = 0
+        self.update()
         self.btn.config(state="disabled")
         while len(crawler.donelist) < crawler.total:
             self.bar['value'] = len(crawler.donelist)
             self.update()
             sleep(1)
+
+        crawler.openHtml()
         self.bar['value'] = crawler.total
-        k = crawler.findlist
+        self.update()
         self.btn.config(state="active")
 
     def checkurl(self):

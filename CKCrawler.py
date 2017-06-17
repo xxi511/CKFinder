@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs
 from urllib.request import urlopen
 from urllib.request import Request
 import threading
+import webbrowser
 
 
 class CKCrawler(object):
@@ -17,6 +18,7 @@ class CKCrawler(object):
         self.donelist = []
         self.findlist = {}
         self.total = p2 - p1 + 1
+        self.tid = tid
         self.th1, self.th2, self.th3 = self.createThread(p1, p2, tid, keywod)
 
     def getpageData(self, tid, page):
@@ -61,3 +63,35 @@ class CKCrawler(object):
         self.th1.start()
         self.th2.start()
         self.th3.start()
+
+    def openHtml(self):
+        message = """
+        <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <style>
+            body {background-color: #bcbcbc; font-family: "Microsoft JhengHei", "Times New Roman";}
+            a {background-color: #ceecec; display:block; width: 50%;
+              padding: 20px; border-radius: 15px; -moz-border-radius: 15px;
+              text-decoration:none;color:black; white-space: pre-line; margin: auto;}
+            a:visited {background-color: #ececec;}
+          </style>
+        </head>
+        
+        <body>
+        """
+        for key, val in self.findlist.items():
+            message += self.herfModule(key, val)
+        message += """
+        </body>
+        </html>
+        """
+
+        with open('result.html', 'w', encoding='utf-16-le') as f:
+            f.write(message)
+        webbrowser.open_new_tab('result.html')
+
+    def herfModule(self, pid, world):
+        url = 'https://ck101.com/forum.php?mod=redirect&goto=findpost&ptid={}&pid={}'.format(self.tid, pid)
+        return """<a href="{}" target="_blank">{}</a>
+  <br>""".format(url, world)
