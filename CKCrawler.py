@@ -3,6 +3,7 @@ from urllib.request import urlopen
 from urllib.request import Request
 import threading
 import webbrowser
+from collections import OrderedDict
 
 
 class CKCrawler(object):
@@ -80,7 +81,9 @@ class CKCrawler(object):
         
         <body>
         """
-        for key, val in self.findlist.items():
+
+        sortedDict = OrderedDict(sorted(self.findlist.items()))
+        for key, val in sortedDict.items():
             message += self.herfModule(key, val)
         message += """
         </body>
